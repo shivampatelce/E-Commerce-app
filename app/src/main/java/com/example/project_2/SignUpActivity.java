@@ -2,6 +2,7 @@ package com.example.project_2;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -17,6 +18,11 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class SignUpActivity extends AppCompatActivity {
 
@@ -29,6 +35,7 @@ public class SignUpActivity extends AppCompatActivity {
     private Button goToSignInButton;
 
     private FirebaseAuth firebaseAuth;
+    private FirebaseFirestore database;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,8 +77,25 @@ public class SignUpActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            Intent intent = new Intent(SignUpActivity.this, MainActivity.class);
-                            startActivity(intent);
+                            database = FirebaseFirestore.getInstance();
+                            // Get the user ID (uid)
+                            String uid = firebaseAuth.getCurrentUser().getUid();
+
+                            // Create a map of user details
+                            Map<String, Object> userDetails = new HashMap<>();
+                            userDetails.put("firsName", firstNameEditText.getText().toString().trim());
+                            userDetails.put("lastName", lastNameEditText.getText().toString().trim());
+                            userDetails.put("cart", new ArrayList<String>());
+
+                            // Save user details in Firestore
+                            database.collection("UserDetails").document(uid)
+                                    .set(userDetails)
+                                    .addOnSuccessListener(aVoid -> {
+                                        Log.i("UserCreate", "User is created.");
+                                        Intent intent = new Intent(SignUpActivity.this, SignInActivity.class);
+                                        startActivity(intent);
+                                    })
+                                    .addOnFailureListener(e -> Log.w("FirestoreData", "Error adding user details", e));
                         } else {
                             Toast.makeText(SignUpActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
