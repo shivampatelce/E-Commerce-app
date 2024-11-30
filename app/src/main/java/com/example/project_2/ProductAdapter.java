@@ -4,6 +4,7 @@ package com.example.project_2;
 import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -20,16 +21,19 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.squareup.picasso.Picasso;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHolder>{
     private List<Product> productList;
     private FirebaseUser user;
     private FirebaseFirestore database;
-    private List<String> cart;
+    private Map<String, Long> cart;
 
     ProductAdapter(List<Product> productList) {
         this.productList = productList;
+        cart = new HashMap<>();
         user = FirebaseAuth.getInstance().getCurrentUser();
         database = FirebaseFirestore.getInstance();
         updateCart();
@@ -63,7 +67,20 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHo
         });
 
         holder.addToCartButton.setOnClickListener(view-> {
-            updateProductInCart(holder, product);
+            long quantity = Long.parseLong(holder.quantity.getText().toString());
+            if (quantity == 0) {
+                quantity = 1L;
+            }
+            removeProductInCart(holder, product, quantity);
+        });
+
+        holder.updateQuantityButton.setOnClickListener(view -> {
+            long quantity = Long.parseLong(holder.quantity.getText().toString());
+            if (quantity == 0) {
+                quantity = 1L;
+            }
+
+            updateProductInCart(holder, product, quantity);
         });
     }
 
@@ -77,9 +94,11 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHo
         TextView productTitle;
         TextView productDescription;
         TextView productPrice;
+        TextView quantity;
         ImageView productImage;
         CardView productCard;
         Button addToCartButton;
+        Button updateQuantityButton;
 
         MyViewHolder(LayoutInflater inflater, ViewGroup parent) {
             super(inflater.inflate(R.layout.product_card_layout, parent, false));
@@ -88,6 +107,8 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHo
             productPrice = itemView.findViewById(R.id.productPrice);
             productImage = itemView.findViewById(R.id.productImage);
             addToCartButton = itemView.findViewById(R.id.addToCart);
+            quantity = itemView.findViewById(R.id.quantity);
+            updateQuantityButton = itemView.findViewById(R.id.updateQnt);
 
             productCard = itemView.findViewById(R.id.productCard);
         }
@@ -100,7 +121,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHo
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         DocumentSnapshot document = task.getResult();
-                        cart = (List<String>) document.get("cart");
+                        cart = (Map<String, Long>) document.get("cart");
                     } else {
                         Log.w("FirestoreData", "Error getting documents.", task.getException());
                     }
@@ -108,19 +129,22 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHo
     }
 
     private void setCartButtonText(MyViewHolder holder, Product product) {
-        if(cart.contains(product.getTitle())) {
+        if(cart.containsKey(product.getTitle())) {
+            holder.quantity.setText(cart.get(product.getTitle()).toString());
             holder.addToCartButton.setText("Remove From Cart");
+            holder.updateQuantityButton.setVisibility(View.VISIBLE);
             return;
         }
         holder.addToCartButton.setText("Add To Cart");
+        holder.updateQuantityButton.setVisibility(View.GONE);
     }
 
-    private void updateProductInCart(MyViewHolder holder, Product product) {
+    private void removeProductInCart(MyViewHolder holder, Product product, Long quantity) {
         String productTitle = product.getTitle();
-        if(cart.contains(productTitle)) {
+        if(cart.containsKey(productTitle)) {
             cart.remove(productTitle);
         } else {
-            cart.add(productTitle);
+            cart.put(productTitle, quantity);
         }
 
         database.collection("UserDetails").document(user.getUid())
@@ -128,6 +152,22 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHo
                 .addOnSuccessListener(aVoid -> {
                     updateCart().addOnCompleteListener(task-> {
                         setCartButtonText(holder, product);
+                        holder.quantity.clearFocus();
+                    });
+                })
+                .addOnFailureListener(e -> Log.w("FirestoreData", "Error updating document", e));
+    }
+
+    private void updateProductInCart(MyViewHolder holder, Product product, Long quantity) {
+        String productTitle = product.getTitle();
+        cart.put(productTitle, quantity);
+
+        database.collection("UserDetails").document(user.getUid())
+                .update("cart", cart)
+                .addOnSuccessListener(aVoid -> {
+                    updateCart().addOnCompleteListener(task-> {
+                        setCartButtonText(holder, product);
+                        holder.quantity.clearFocus();
                     });
                 })
                 .addOnFailureListener(e -> Log.w("FirestoreData", "Error updating document", e));

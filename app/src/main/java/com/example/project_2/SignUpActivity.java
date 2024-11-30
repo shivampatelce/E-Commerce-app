@@ -81,11 +81,13 @@ public class SignUpActivity extends AppCompatActivity {
                             // Get the user ID (uid)
                             String uid = firebaseAuth.getCurrentUser().getUid();
 
+                            Map<String, Integer> cart = new HashMap<>();
+
                             // Create a map of user details
                             Map<String, Object> userDetails = new HashMap<>();
                             userDetails.put("firsName", firstNameEditText.getText().toString().trim());
                             userDetails.put("lastName", lastNameEditText.getText().toString().trim());
-                            userDetails.put("cart", new ArrayList<String>());
+                            userDetails.put("cart", cart);
 
                             // Save user details in Firestore
                             database.collection("UserDetails").document(uid)
