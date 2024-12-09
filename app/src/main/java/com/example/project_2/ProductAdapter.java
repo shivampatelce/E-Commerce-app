@@ -7,6 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -74,13 +76,18 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHo
             removeProductInCart(holder, product, quantity);
         });
 
-        holder.updateQuantityButton.setOnClickListener(view -> {
-            long quantity = Long.parseLong(holder.quantity.getText().toString());
-            if (quantity == 0) {
-                quantity = 1L;
-            }
-
+        holder.incrementButton.setOnClickListener(view -> {
+            long quantity = Long.parseLong(holder.quantity.getText().toString()) + 1;
+            holder.quantity.setText(String.valueOf(quantity));
             updateProductInCart(holder, product, quantity);
+        });
+
+        holder.decreaseButton.setOnClickListener(view -> {
+            long quantity = Long.parseLong(holder.quantity.getText().toString()) - 1;
+            if(quantity > 0) {
+                holder.quantity.setText(String.valueOf(quantity));
+                updateProductInCart(holder, product, quantity);
+            }
         });
     }
 
@@ -94,11 +101,13 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHo
         TextView productTitle;
         TextView productDescription;
         TextView productPrice;
-        TextView quantity;
+        EditText quantity;
         ImageView productImage;
         CardView productCard;
-        Button addToCartButton;
-        Button updateQuantityButton;
+        ImageButton addToCartButton;
+
+        Button incrementButton;
+        Button decreaseButton;
 
         MyViewHolder(LayoutInflater inflater, ViewGroup parent) {
             super(inflater.inflate(R.layout.product_card_layout, parent, false));
@@ -108,7 +117,9 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHo
             productImage = itemView.findViewById(R.id.productImage);
             addToCartButton = itemView.findViewById(R.id.addToCart);
             quantity = itemView.findViewById(R.id.quantity);
-            updateQuantityButton = itemView.findViewById(R.id.updateQnt);
+
+            incrementButton = itemView.findViewById(R.id.increaseQnt);
+            decreaseButton = itemView.findViewById(R.id.decreaseQnt);
 
             productCard = itemView.findViewById(R.id.productCard);
         }
@@ -131,18 +142,17 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHo
     private void setCartButtonText(MyViewHolder holder, Product product) {
         if(cart.containsKey(product.getTitle())) {
             holder.quantity.setText(cart.get(product.getTitle()).toString());
-            holder.addToCartButton.setText("Remove From Cart");
-            holder.updateQuantityButton.setVisibility(View.VISIBLE);
+            holder.addToCartButton.setImageResource(R.drawable.baseline_delete_24);
             return;
         }
-        holder.addToCartButton.setText("Add To Cart");
-        holder.updateQuantityButton.setVisibility(View.GONE);
+        holder.addToCartButton.setImageResource(R.drawable.baseline_shopping_cart_24);
     }
 
     private void removeProductInCart(MyViewHolder holder, Product product, Long quantity) {
         String productTitle = product.getTitle();
         if(cart.containsKey(productTitle)) {
             cart.remove(productTitle);
+            holder.quantity.setText("1");
         } else {
             cart.put(productTitle, quantity);
         }

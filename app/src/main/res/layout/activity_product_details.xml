@@ -49,13 +49,14 @@
             android:gravity="center"
             android:padding="4dp">
 
-            <TextView
-                android:id="@+id/textView4"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textSize="18sp"
-                android:text="Quantity:" />
+            <Button
+                android:id="@+id/decreaseQnt"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:padding="0dp"
+                android:text="-"
+                android:textSize="24sp"
+                android:gravity="center" />
 
             <EditText
                 android:id="@+id/quantity"
@@ -68,29 +69,23 @@
                 android:text="1"
                 android:background="@android:drawable/editbox_background" />
 
+            <Button
+                android:id="@+id/increaseQnt"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:padding="0dp"
+                android:text="+"
+                android:textSize="24sp"
+                android:gravity="center" />
+
         </LinearLayout>
 
-        <LinearLayout
+        <Button
+            android:id="@+id/addToCart"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/updateQnt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginRight="8dp"
-                android:text="Update Quantity" />
-
-            <Button
-                android:id="@+id/addToCart"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:text="Add To Cart" />
-
-        </LinearLayout>
+            android:layout_marginBottom="8dp"
+            android:text="Add To Cart" />
 
         <TextView
             android:id="@+id/productDescription"

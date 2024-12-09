@@ -35,7 +35,9 @@ public class ProductDetailsActivity extends AppCompatActivity {
     TextView productDescriptionTextView;
     TextView quantity;
     Button addToCartButton;
-    Button updateQuantityButton;
+    Button incrementButton;
+    Button decrementButton;
+
     ViewPager2 viewPagerImage;
     private RecyclerView.Adapter productImageAdapter;
     private FirebaseFirestore database;
@@ -54,12 +56,13 @@ public class ProductDetailsActivity extends AppCompatActivity {
         });
 
         addToCartButton = findViewById(R.id.addToCart);
-        updateQuantityButton = findViewById(R.id.updateQnt);
         productTitleTextView = findViewById(R.id.productTitle);
         productPriceTextView = findViewById(R.id.productPrice);
         productDescriptionTextView = findViewById(R.id.productDescription);
         viewPagerImage = findViewById(R.id.viewPagerImage);
         quantity = findViewById(R.id.quantity);
+        incrementButton = findViewById(R.id.increaseQnt);
+        decrementButton = findViewById(R.id.decreaseQnt);
 
         user = FirebaseAuth.getInstance().getCurrentUser();
         database = FirebaseFirestore.getInstance();
@@ -100,8 +103,18 @@ public class ProductDetailsActivity extends AppCompatActivity {
                                 updateProductInCart(productTitle, Long.parseLong(quantity.getText().toString()));
                             });
 
-                            updateQuantityButton.setOnClickListener(view -> {
-                                updateProductQuantityInCart(productTitle, Long.parseLong(quantity.getText().toString()));
+                            incrementButton.setOnClickListener(view -> {
+                                long cartQuantity = Long.parseLong(quantity.getText().toString()) + 1;
+                                quantity.setText(String.valueOf(cartQuantity));
+                                updateProductQuantityInCart(productTitle, cartQuantity);
+                            });
+
+                            decrementButton.setOnClickListener(view -> {
+                                long cartQuantity = Long.parseLong(quantity.getText().toString()) - 1;
+                                if(cartQuantity > 0) {
+                                    quantity.setText(String.valueOf(cartQuantity));
+                                    updateProductQuantityInCart(productTitle, cartQuantity);
+                                }
                             });
 
                             productImageAdapter = new ProductImageAdapter(subImages);
@@ -131,6 +144,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
     private void updateProductInCart(String productTitle, Long quantity) {
         if(cart.containsKey(productTitle)) {
             cart.remove(productTitle);
+            this.quantity.setText("1");
         } else {
             cart.put(productTitle, quantity);
         }
@@ -160,10 +174,8 @@ public class ProductDetailsActivity extends AppCompatActivity {
         if(cart.containsKey(productTitle)) {
             quantity.setText(cart.get(productTitle).toString());
             addToCartButton.setText("Remove From Cart");
-            updateQuantityButton.setVisibility(View.VISIBLE);
         } else {
             addToCartButton.setText("Add To Cart");
-            updateQuantityButton.setVisibility(View.GONE);
         }
     }
 

@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -24,12 +25,18 @@ public class CartListAdapter extends RecyclerView.Adapter<CartListAdapter.MyView
     private Map<String, Long> cart;
     private FirebaseUser user;
     private FirebaseFirestore database;
+    private OnDataChangeListener dataChangeListener;
 
-    CartListAdapter(List<Product> productList, Map<String, Long> cart) {
+    CartListAdapter(List<Product> productList, Map<String, Long> cart, OnDataChangeListener listener) {
         this.productList = productList;
         this.cart = cart;
+        this.dataChangeListener = listener;
         user = FirebaseAuth.getInstance().getCurrentUser();
         database = FirebaseFirestore.getInstance();
+    }
+
+    interface OnDataChangeListener {
+        void onDataChanged();
     }
 
     @NonNull
@@ -52,9 +59,20 @@ public class CartListAdapter extends RecyclerView.Adapter<CartListAdapter.MyView
                 .load(product.getImageURL())
                 .into(holder.productImage);
 
-//        Update cart quantity
-        holder.updateQntButton.setOnClickListener(view-> {
-            updateProductInCart(holder,product, Long.parseLong(holder.quantity.getText().toString()));
+//        Increase cart quantity
+        holder.incrementButton.setOnClickListener(view-> {
+            long cartQuantity = Long.parseLong(holder.quantity.getText().toString()) + 1;
+            holder.quantity.setText(String.valueOf(cartQuantity));
+            updateProductInCart(holder, product, cartQuantity);
+        });
+
+//        Decrease cart quantity
+        holder.decrementButton.setOnClickListener((view)-> {
+            long cartQuantity = Long.parseLong(holder.quantity.getText().toString()) - 1;
+            if(cartQuantity > 0) {
+                holder.quantity.setText(String.valueOf(cartQuantity));
+                updateProductInCart(holder, product, cartQuantity);
+            }
         });
 
 //        Remove item from cart
@@ -72,17 +90,19 @@ public class CartListAdapter extends RecyclerView.Adapter<CartListAdapter.MyView
         ImageView productImage;
         TextView productTitle;
         TextView productPrice;
-        Button removeButton;
-        Button updateQntButton;
+        ImageButton removeButton;
         EditText quantity;
+        Button incrementButton;
+        Button decrementButton;
 
         MyViewHolder(LayoutInflater inflater, ViewGroup parent) {
             super(inflater.inflate(R.layout.cart_card_layout, parent, false));
             productTitle = itemView.findViewById(R.id.cartProductTitle);
             productPrice = itemView.findViewById(R.id.cartProductPrice);
             productImage = itemView.findViewById(R.id.cartProductImage);
-            updateQntButton = itemView.findViewById(R.id.updateCart);
             removeButton = itemView.findViewById(R.id.removeButton);
+            incrementButton = itemView.findViewById(R.id.increaseQnt);
+            decrementButton = itemView.findViewById(R.id.decreaseQnt);
 
             quantity = itemView.findViewById(R.id.quantity);
         }
@@ -98,6 +118,9 @@ public class CartListAdapter extends RecyclerView.Adapter<CartListAdapter.MyView
                 .update("cart", cart)
                 .addOnSuccessListener(task -> {
                     holder.quantity.clearFocus();
+                    if (dataChangeListener != null) {
+                        dataChangeListener.onDataChanged();
+                    }
                 })
                 .addOnFailureListener(e -> Log.w("FirestoreData", "Error updating document", e));
     }
@@ -108,6 +131,9 @@ public class CartListAdapter extends RecyclerView.Adapter<CartListAdapter.MyView
                 .update("cart", cart)
                 .addOnSuccessListener(task -> {
                     productList.remove(product);
+                    if (dataChangeListener != null) {
+                        dataChangeListener.onDataChanged();
+                    }
                     notifyDataSetChanged();
                 })
                 .addOnFailureListener(e -> Log.w("FirestoreData", "Error updating document", e));
