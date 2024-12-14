@@ -37,6 +37,7 @@ public class AddAddressActivity extends AppCompatActivity implements AddressList
     private FirebaseFirestore database;
     private FirebaseUser user;
     private LinearLayout addressViewLayout;
+    private double amount;
 
     private RecyclerView recyclerView;
     private RecyclerView.Adapter addressListAdapter;
@@ -54,12 +55,14 @@ public class AddAddressActivity extends AppCompatActivity implements AddressList
             return insets;
         });
 
+        amount = getIntent().getDoubleExtra("totalPaymentAmount", 0d);
+
         recyclerView = findViewById(R.id.addressListRecyclerView);
         layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
 
         addressList = new ArrayList<>();
-        addressListAdapter = new AddressListAdapter(addressList, this);
+        addressListAdapter = new AddressListAdapter(addressList, amount, this);
         recyclerView.setAdapter(addressListAdapter);
 
         topToolbar = findViewById(R.id.top_toolbar);

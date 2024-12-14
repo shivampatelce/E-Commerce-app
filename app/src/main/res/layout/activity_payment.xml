@@ -43,7 +43,7 @@
                 android:layout_marginBottom="16dp"
                 android:text="Payment"
                 android:textAlignment="center"
-                android:textSize="18sp"
+                android:textSize="20sp"
                 android:textStyle="bold" />
 
             <TextView
@@ -145,6 +145,31 @@
                 android:hint="Enter CVV"
                 android:inputType="numberPassword"
                 android:maxLength="3" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Pay: "
+                    android:textAlignment="center"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/amount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="$0"
+                    android:textAlignment="center"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
 
             <Button
                 android:id="@+id/paymentButton"

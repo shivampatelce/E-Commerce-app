@@ -22,12 +22,14 @@ public class AddressListAdapter extends RecyclerView.Adapter<AddressListAdapter.
     private FirebaseFirestore database;
     private FirebaseUser user;
     private AddressListAdapter.OnDataChangeListener dataChangeListener;
+    private double amount;
 
-    AddressListAdapter(List<Address> addressList, AddressListAdapter.OnDataChangeListener listener) {
+    AddressListAdapter(List<Address> addressList,double amount, AddressListAdapter.OnDataChangeListener listener) {
         this.addressList = addressList;
         database = FirebaseFirestore.getInstance();
         user = FirebaseAuth.getInstance().getCurrentUser();
         dataChangeListener = listener;
+        this.amount = amount;
     }
 
     interface OnDataChangeListener {
@@ -52,6 +54,7 @@ public class AddressListAdapter extends RecyclerView.Adapter<AddressListAdapter.
 
         holder.selectButton.setOnClickListener(view-> {
             Intent intent = new Intent(view.getContext(), PaymentActivity.class);
+            intent.putExtra("amount", amount);
             view.getContext().startActivity(intent);
         });
 

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,6 +18,8 @@ public class PaymentActivity extends AppCompatActivity {
     private Toolbar topToolbar;
     private EditText cardHolderName, cardNumber, expiryMonth, expiryYear, cvv;
     private Button paymentButton;
+    private TextView amountView;
+    private double amount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,12 +39,16 @@ public class PaymentActivity extends AppCompatActivity {
             getSupportActionBar().setTitle("Checkout");
         }
 
+        amount = getIntent().getDoubleExtra("amount", 0d);
+        amountView = findViewById(R.id.amount);
         cardHolderName = findViewById(R.id.cardHolderName);
         cardNumber = findViewById(R.id.cardNumber);
         expiryMonth = findViewById(R.id.expiryMonth);
         expiryYear = findViewById(R.id.expiryYear);
         cvv = findViewById(R.id.cvv);
         paymentButton = findViewById(R.id.paymentButton);
+
+        amountView.setText("$" + String.format("%.2f", amount));
 
         paymentButton.setOnClickListener(view -> {
             if (validateInputs()) {
