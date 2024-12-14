@@ -42,6 +42,7 @@ public class ProductsFragment extends Fragment {
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
+                        productList.clear();
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             String title = document.getString("title");
                             String description = document.getString("description");

@@ -88,6 +88,7 @@ public class SignUpActivity extends AppCompatActivity {
                             userDetails.put("firsName", firstNameEditText.getText().toString().trim());
                             userDetails.put("lastName", lastNameEditText.getText().toString().trim());
                             userDetails.put("cart", cart);
+                            userDetails.put("addresses", new ArrayList<>());
 
                             // Save user details in Firestore
                             database.collection("UserDetails").document(uid)

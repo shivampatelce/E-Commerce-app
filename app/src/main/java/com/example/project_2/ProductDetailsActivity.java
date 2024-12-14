@@ -1,9 +1,11 @@
 package com.example.project_2;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -34,7 +36,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
     TextView productPriceTextView;
     TextView productDescriptionTextView;
     TextView quantity;
-    Button addToCartButton;
+    ImageButton addToCartButton, backButton;
     Button incrementButton;
     Button decrementButton;
 
@@ -63,9 +65,15 @@ public class ProductDetailsActivity extends AppCompatActivity {
         quantity = findViewById(R.id.quantity);
         incrementButton = findViewById(R.id.increaseQnt);
         decrementButton = findViewById(R.id.decreaseQnt);
+        backButton = findViewById(R.id.backButton);
 
         user = FirebaseAuth.getInstance().getCurrentUser();
         database = FirebaseFirestore.getInstance();
+
+        backButton.setOnClickListener(view -> {
+            Intent intent = new Intent(this, MainLayoutActivity.class);
+            startActivity(intent);
+        });
 
         String productTitle = getIntent().getStringExtra("productTitle");
         if (productTitle != null) {
@@ -105,8 +113,10 @@ public class ProductDetailsActivity extends AppCompatActivity {
 
                             incrementButton.setOnClickListener(view -> {
                                 long cartQuantity = Long.parseLong(quantity.getText().toString()) + 1;
-                                quantity.setText(String.valueOf(cartQuantity));
-                                updateProductQuantityInCart(productTitle, cartQuantity);
+                                if(cartQuantity <= 10) {
+                                    quantity.setText(String.valueOf(cartQuantity));
+                                    updateProductQuantityInCart(productTitle, cartQuantity);
+                                }
                             });
 
                             decrementButton.setOnClickListener(view -> {
@@ -173,9 +183,9 @@ public class ProductDetailsActivity extends AppCompatActivity {
     private void updateCartButtonText(String productTitle) {
         if(cart.containsKey(productTitle)) {
             quantity.setText(cart.get(productTitle).toString());
-            addToCartButton.setText("Remove From Cart");
+            addToCartButton.setImageResource(R.drawable.baseline_remove_shopping_cart_24);
         } else {
-            addToCartButton.setText("Add To Cart");
+            addToCartButton.setImageResource(R.drawable.baseline_shopping_cart_24);
         }
     }
 

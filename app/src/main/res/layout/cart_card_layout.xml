@@ -80,6 +80,7 @@
                         android:gravity="center"
                         android:textSize="14sp"
                         android:inputType="number"
+                        android:focusable="false"
                         android:text="1"
                         android:background="@android:drawable/editbox_background" />
 
@@ -100,6 +101,7 @@
                         android:padding="0dp"
                         android:layout_weight="1"
                         android:background="@color/white"
+                        app:tint="#D32F2F"
                         app:srcCompat="@drawable/baseline_delete_24" />
 
                 </LinearLayout>

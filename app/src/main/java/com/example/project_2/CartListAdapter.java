@@ -53,7 +53,9 @@ public class CartListAdapter extends RecyclerView.Adapter<CartListAdapter.MyView
 
         holder.productTitle.setText(product.getTitle());
         holder.productPrice.setText("$" + String.valueOf(product.getPrice()));
-        holder.quantity.setText(quantity.toString());
+        if(quantity != null) {
+            holder.quantity.setText(quantity.toString());
+        }
 
         Picasso.get()
                 .load(product.getImageURL())
@@ -62,8 +64,10 @@ public class CartListAdapter extends RecyclerView.Adapter<CartListAdapter.MyView
 //        Increase cart quantity
         holder.incrementButton.setOnClickListener(view-> {
             long cartQuantity = Long.parseLong(holder.quantity.getText().toString()) + 1;
-            holder.quantity.setText(String.valueOf(cartQuantity));
-            updateProductInCart(holder, product, cartQuantity);
+            if(cartQuantity <= 10) {
+                holder.quantity.setText(String.valueOf(cartQuantity));
+                updateProductInCart(holder, product, cartQuantity);
+            }
         });
 
 //        Decrease cart quantity

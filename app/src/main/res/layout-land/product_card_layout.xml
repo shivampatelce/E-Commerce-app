@@ -108,8 +108,7 @@
                         android:padding="0dp"
                         android:layout_weight="1"
                         android:background="@color/white"
-                        app:srcCompat="@drawable/baseline_shopping_cart_24"
-                        app:tint="#4CAF50" />
+                        app:srcCompat="@drawable/baseline_shopping_cart_24" />
 
                 </LinearLayout>
 

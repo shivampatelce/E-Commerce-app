@@ -1,5 +1,6 @@
 package com.example.project_2;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -23,7 +24,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +43,7 @@ public class CartFragment extends Fragment implements CartListAdapter.OnDataChan
     private RecyclerView recyclerView;
     private RecyclerView.Adapter cartListAdapter;
     private RecyclerView.LayoutManager layoutManager;
+    private double totalPaymentAmount = 0d;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -68,6 +69,12 @@ public class CartFragment extends Fragment implements CartListAdapter.OnDataChan
         emptyCartMessageLayout.setVisibility(View.GONE);
 
         setCartList();
+
+        checkoutButton.setOnClickListener(v -> {
+            Intent intent = new Intent(view.getContext(), AddAddressActivity.class);
+            intent.putExtra("totalPaymentAmount", totalPaymentAmount);
+            startActivity(intent);
+        });
 
         return view;
     }
@@ -149,15 +156,19 @@ public class CartFragment extends Fragment implements CartListAdapter.OnDataChan
         double taxAmount = 0d;
         double totalAmount = 0d;
         for (Product product : products) {
-            subtotalAmount += product.getPrice() * cart.get(product.getTitle());
+            Long quantity = cart.get(product.getTitle());
+            if (quantity != null) {
+                subtotalAmount += product.getPrice() * quantity;
+            }
         }
-        this.subtotalAmount.setText("$" + String.valueOf(subtotalAmount));
+        this.subtotalAmount.setText("$" + String.format("%.2f",subtotalAmount));
 
         taxAmount = subtotalAmount * 0.13;
-        this.taxAmount.setText("$" + String.valueOf(taxAmount));
+        this.taxAmount.setText("$" + String.format("%.2f",taxAmount));
 
         totalAmount = subtotalAmount + taxAmount;
-        this.totalAmount.setText("$" + String.valueOf(totalAmount));
+        totalPaymentAmount = totalAmount;
+        this.totalAmount.setText("$" + String.format("%.2f", totalAmount));
     }
 
     @Override

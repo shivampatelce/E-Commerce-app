@@ -78,8 +78,10 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHo
 
         holder.incrementButton.setOnClickListener(view -> {
             long quantity = Long.parseLong(holder.quantity.getText().toString()) + 1;
-            holder.quantity.setText(String.valueOf(quantity));
-            updateProductInCart(holder, product, quantity);
+            if(quantity <= 10) {
+                holder.quantity.setText(String.valueOf(quantity));
+                updateProductInCart(holder, product, quantity);
+            }
         });
 
         holder.decreaseButton.setOnClickListener(view -> {
@@ -142,7 +144,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHo
     private void setCartButtonText(MyViewHolder holder, Product product) {
         if(cart.containsKey(product.getTitle())) {
             holder.quantity.setText(cart.get(product.getTitle()).toString());
-            holder.addToCartButton.setImageResource(R.drawable.baseline_delete_24);
+            holder.addToCartButton.setImageResource(R.drawable.baseline_remove_shopping_cart_24);
             return;
         }
         holder.addToCartButton.setImageResource(R.drawable.baseline_shopping_cart_24);
