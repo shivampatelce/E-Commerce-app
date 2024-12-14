@@ -123,6 +123,9 @@ public class SignUpActivity extends AppCompatActivity {
         if(emailEditText.getText().toString().trim().isEmpty()) {
             emailEditText.setError("Email cannot be empty");
             isValid = false;
+        } else if(!emailEditText.getText().toString().trim().matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
+            emailEditText.setError("Enter valid email.");
+            isValid = false;
         }
 
         String password = this.password.getText().toString().trim();

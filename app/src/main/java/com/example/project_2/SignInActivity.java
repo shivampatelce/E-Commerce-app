@@ -91,6 +91,9 @@ public class SignInActivity extends AppCompatActivity {
         if(email.getText().toString().trim().isEmpty()) {
             email.setError("Email cannot be empty");
             isValid = false;
+        } else if(!email.getText().toString().trim().matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
+            email.setError("Enter valid email.");
+            isValid = false;
         }
 
         if(password.getText().toString().trim().isEmpty()) {
