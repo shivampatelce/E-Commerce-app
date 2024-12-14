@@ -113,7 +113,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
 
                             incrementButton.setOnClickListener(view -> {
                                 long cartQuantity = Long.parseLong(quantity.getText().toString()) + 1;
-                                if(cartQuantity <= 10) {
+                                if(cartQuantity <= 5) {
                                     quantity.setText(String.valueOf(cartQuantity));
                                     updateProductQuantityInCart(productTitle, cartQuantity);
                                 }

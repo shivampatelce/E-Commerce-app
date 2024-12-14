@@ -53,7 +53,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHo
         Product product = productList.get(position);
         holder.productTitle.setText(product.getTitle());
         holder.productDescription.setText(product.getSubDescription());
-        holder.productPrice.setText("$"+String.valueOf(product.getPrice()));
+        holder.productPrice.setText("$"+String.format("%.2f",product.getPrice()));
 
         setCartButtonText(holder, product);
 
@@ -78,7 +78,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHo
 
         holder.incrementButton.setOnClickListener(view -> {
             long quantity = Long.parseLong(holder.quantity.getText().toString()) + 1;
-            if(quantity <= 10) {
+            if(quantity <= 5) {
                 holder.quantity.setText(String.valueOf(quantity));
                 updateProductInCart(holder, product, quantity);
             }

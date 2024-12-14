@@ -52,7 +52,7 @@ public class CartListAdapter extends RecyclerView.Adapter<CartListAdapter.MyView
         Long quantity = cart.get(product.getTitle());
 
         holder.productTitle.setText(product.getTitle());
-        holder.productPrice.setText("$" + String.valueOf(product.getPrice()));
+        holder.productPrice.setText("$" + String.format("%.2f",product.getPrice()));
         if(quantity != null) {
             holder.quantity.setText(quantity.toString());
         }
@@ -64,7 +64,7 @@ public class CartListAdapter extends RecyclerView.Adapter<CartListAdapter.MyView
 //        Increase cart quantity
         holder.incrementButton.setOnClickListener(view-> {
             long cartQuantity = Long.parseLong(holder.quantity.getText().toString()) + 1;
-            if(cartQuantity <= 10) {
+            if(cartQuantity <= 5) {
                 holder.quantity.setText(String.valueOf(cartQuantity));
                 updateProductInCart(holder, product, cartQuantity);
             }
